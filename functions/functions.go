@@ -1,7 +1,8 @@
-package main
+package functions
 
 import (
 	"fmt"
+	"github.com/filirnd/owbot/models/telegram"
 	"io/ioutil"
 	"net"
 	"os/exec"
@@ -10,17 +11,17 @@ import (
 
 const dhcpFile = "/tmp/dhcp.leases"
 
-var functionMap = make(map[string]func(update TgUpdate) (string, error))
+var functionMap = make(map[string]func(update telegram.TgUpdate) (string, error))
 
 // FUNCTIONS MANAGEMENT
 
-func initFunctions() {
+func InitFunctions() {
 	functionMap["/clients"] = getClients
 	functionMap["/reboot"] = reboot
 }
 
 // Return error if not exists function or other function errors
-func executeFunction(name string, update TgUpdate) (string, error) {
+func ExecuteFunction(name string, update telegram.TgUpdate) (string, error) {
 	if fun, exist := functionMap[name]; exist {
 		return fun(update)
 	} else {
@@ -30,17 +31,18 @@ func executeFunction(name string, update TgUpdate) (string, error) {
 
 // FUNCTIONS
 
-func reboot(update TgUpdate) (string,error) {
+func reboot(update telegram.TgUpdate) (string,error) {
 	cmd := exec.Command("reboot")
 	_, err := cmd.Output()
 	if err != nil {
 		fmt.Println("Reboot error " + err.Error())
-	} else {
+		return "",err
 	}
+
 	return "", nil
 }
 
-func getClients(update TgUpdate) (string, error) {
+func getClients(update telegram.TgUpdate) (string, error) {
 	l, err := net.Interfaces()
 	if err != nil {
 		return "", err

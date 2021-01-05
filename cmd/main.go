@@ -5,6 +5,9 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/filirnd/owbot/functions"
+	"github.com/filirnd/owbot/models/config"
+	"github.com/filirnd/owbot/models/telegram"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,32 +16,53 @@ import (
 	"time"
 )
 
-const myId = 0
-const botToken = ""
 
-var offset int64 = 0
-
-const lastOffsetFile = "lastOffset"
+const configFile = "resources/config.json"
+const lastOffsetFile = "resources/lastOffset"
 const sleepTimeoutSeconds = 5
 
+var adminId int64
+var botToken string
+
+var offset int64 = 0
 func main() {
-	fmt.Println("    *")
-	fmt.Println(" *  *  *   -------------------------------------------------------")
-	fmt.Println("* OWbot *   Made with <3 by Filirnd (https://github.com/filirnd/)")
-	fmt.Println(" *  *  *   -------------------------------------------------------")
-	fmt.Println("    *")
+
+	fmt.Println("  /-=====-\\   -------------------------------------------------------")
+	fmt.Println(" [--OWbot--]   Made with <3 by Filirnd (https://github.com/filirnd/)")
+	fmt.Println("  \\-=====-/   -------------------------------------------------------")
 	fmt.Println("")
-	err:=sendMsg(myId,"Router started!")
+
+	err := loadConfig()
+	if err != nil {
+		fmt.Println("Cannot load config. Error "+err.Error())
+		os.Exit(-1)
+	}
+
+	fmt.Println("AdminId:"+strconv.FormatInt(adminId,10))
+	fmt.Println("BotToken:"+botToken)
+
+	err =sendMsg(adminId,"Router started!")
 	if err != nil {
 		fmt.Println("Error sending message "+err.Error())
 	}
 	getLastOffsetFromFile()
-	initFunctions()
+	functions.InitFunctions()
 	go updatesLoop()
 
 	for {
 		time.Sleep(time.Second * 10)
 	}
+}
+
+func loadConfig() error{
+	config,err := config.ConfigFromFile(configFile)
+	if err != nil {
+		return err
+	}
+	adminId = config.TgId
+	botToken = config.TgBotToken
+
+	return nil
 }
 
 func updateLastOffset(newOffset int64) {
@@ -93,35 +117,32 @@ func updatesLoop() {
 		if err != nil {
 			fmt.Println("Get Updates Error " + err.Error())
 		}
-		tgUpdateResult := TgUpdateResult{}
+		tgUpdateResult := telegram.TgUpdateResult{}
 		err = json.Unmarshal(body, &tgUpdateResult)
 		if err != nil {
 			fmt.Println("Get Updates Unmarshalling Error " + err.Error())
 		}
 
-		latestUpdate := TgUpdate{}
 		for _, update := range tgUpdateResult.Result {
-			if(update.UpdateId > offset){
+			if update.UpdateId > offset {
+				updateLastOffset(update.UpdateId)
 				executeFunctions(update)
 			}
-			latestUpdate = update
 		}
-		if latestUpdate.UpdateId != offset {
-			updateLastOffset(latestUpdate.UpdateId)
-		}
+
 		time.Sleep(time.Second * sleepTimeoutSeconds)
 	}
 
 }
 
-func executeFunctions(update TgUpdate) {
-	if update.Message.From.Id != myId {
+func executeFunctions(update telegram.TgUpdate) {
+	if update.Message.From.Id != adminId {
 		err := sendMsg(update.Message.From.Id, "This bot is private. You haven't access to this.")
 		if err != nil {
 			fmt.Println("Cannot send message. Error: " + err.Error())
 		}
 	} else {
-		resp,err := executeFunction(update.Message.Text,update)
+		resp,err := functions.ExecuteFunction(update.Message.Text,update)
 		if err != nil {
 			err := sendMsg(update.Message.From.Id, err.Error())
 			if err != nil {
