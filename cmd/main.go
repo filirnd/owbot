@@ -26,10 +26,14 @@ var botToken string
 
 var offset int64 = 0
 func main() {
-
-	fmt.Println("  /-=====-\\   -------------------------------------------------------")
-	fmt.Println(" [--OWbot--]   Made with <3 by Filirnd (https://github.com/filirnd/)")
-	fmt.Println("  \\-=====-/   -------------------------------------------------------")
+	//
+	//
+	//
+	//fmt.Println("  /-=====-\\   -------------------------------------------------------")
+	//fmt.Println(" [--OWbot--]   Made with <3 by Filirnd (https://github.com/filirnd/)")
+	//fmt.Println("  \\-=====-/   -------------------------------------------------------")
+	fmt.Println("")
+	fmt.Println("   \\     /  \n   _\\___/_\n /______ /|  Yet another telegram bot, but for your router.\n|_°_____|/   Made with <3 by Filirnd (https://github.com/filirnd/)")
 	fmt.Println("")
 
 	err := loadConfig()
