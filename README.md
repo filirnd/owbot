@@ -11,28 +11,28 @@
 |_°_____|/   Made with <3 by Filirnd (https://github.com/filirnd/)
 ````
 
-##Description
+## Description
 OWBot is a telegram bot for OpenWrt, made in golang and easily expandable.
 
-##Version 
-###0.0.1b
+## Version 
+### 0.0.1b
 
 This software is in beta stage, so not use it in production environments. 
 
-##Functions
+## Functions
 Actual implemented functions are:
 
     - /clients: return list of connected clients
     - /reboot: reboot the router
      
-##Installation:
-###Prerequisites:
+## Installation:
+### Prerequisites:
 TODO
 
-###Install:
+### Install:
 TODO
 
-##Add custom functions:
+## Add custom functions:
 TODO
 
 
