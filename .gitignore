@@ -3,3 +3,5 @@ resources/lastOffset
 Makefile
 /resources/config.json
 main
+/owbot_install/
+/owbot.zip

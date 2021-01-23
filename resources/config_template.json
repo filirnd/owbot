@@ -1,4 +1,7 @@
 {
     "id": 0,
-    "token": "00:xxxx"
+    "token": "00:xxxx",
+    "async" : {
+        "newClient": true
+    }
 }

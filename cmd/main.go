@@ -16,27 +16,28 @@ import (
 	"time"
 )
 
-
+const version = "1.0.0"
 const configFile = "resources/config.json"
 const lastOffsetFile = "resources/lastOffset"
-const sleepTimeoutSeconds = 5
+const sleepTimeoutSeconds = 2
 
 var adminId int64
 var botToken string
 
 var offset int64 = 0
-func main() {
-	//
-	//
-	//
-	//fmt.Println("  /-=====-\\   -------------------------------------------------------")
-	//fmt.Println(" [--OWbot--]   Made with <3 by Filirnd (https://github.com/filirnd/)")
-	//fmt.Println("  \\-=====-/   -------------------------------------------------------")
+
+func main()  {
+	start()
+}
+
+
+
+func start() {
 	fmt.Println("")
-	fmt.Println("   \\     /  \n   _\\___/_\n /______ /|  Yet another telegram bot, but for your router.\n|_°_____|/   Made with <3 by Filirnd (https://github.com/filirnd/)")
+	fmt.Println("   \\     /                   #### OWbot ####  v. "+version+"\n   _\\___/_\n /______ /|  Yet another telegram bot, but for your router.\n|_°_____|/   Made with <3 by Filirnd (https://github.com/filirnd/)")
 	fmt.Println("")
 
-	err := loadConfig()
+	cfg,err := loadConfig()
 	if err != nil {
 		fmt.Println("Cannot load config. Error "+err.Error())
 		os.Exit(-1)
@@ -45,11 +46,18 @@ func main() {
 	fmt.Println("AdminId:"+strconv.FormatInt(adminId,10))
 	fmt.Println("BotToken:"+botToken)
 
+
 	err =sendMsg(adminId,"Router started!")
 	if err != nil {
 		fmt.Println("Error sending message "+err.Error())
 	}
 	getLastOffsetFromFile()
+
+
+	msgChan := make(chan string)
+	functions.StartAsyncFunctions(&msgChan,cfg)
+	go asyncMessageSender(&msgChan)
+
 	functions.InitFunctions()
 	go updatesLoop()
 
@@ -58,17 +66,37 @@ func main() {
 	}
 }
 
-func loadConfig() error{
-	config,err := config.ConfigFromFile(configFile)
-	if err != nil {
-		return err
-	}
-	adminId = config.TgId
-	botToken = config.TgBotToken
 
-	return nil
+/**
+ Start all async functions for async messages from bot to clients
+ */
+func asyncMessageSender(msg *chan string){
+	for {
+		text := <- *msg
+		err := sendMsg(adminId,text)
+		if err!=nil {
+			fmt.Println("Cannot send async msg. Error: "+err.Error())
+		}
+	}
+
 }
 
+
+func loadConfig() (config.Config,error){
+	cfg,err := config.ConfigFromFile(configFile)
+	if err != nil {
+		return cfg,err
+	}
+	adminId = cfg.TgId
+	botToken = cfg.TgBotToken
+
+	return cfg,nil
+}
+
+
+/**
+ Update lastOffest variable and file, so if process will be rebooted, don't read old processed messages.
+ */
 func updateLastOffset(newOffset int64) {
 	f, err := os.OpenFile(lastOffsetFile, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0755)
 	if err != nil {
@@ -83,6 +111,10 @@ func updateLastOffset(newOffset int64) {
 	offset = newOffset
 }
 
+
+/**
+ Read lastOffset from file and memorize in the variable
+ */
 func getLastOffsetFromFile() {
 	if _, err := os.Stat(lastOffsetFile); err == nil { // File Exists
 		byteLine, err := ioutil.ReadFile(lastOffsetFile)
@@ -107,6 +139,8 @@ func getLastOffsetFromFile() {
 
 }
 
+
+// Start update loop for read messages from clients.
 func updatesLoop() {
 	for {
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
@@ -136,9 +170,9 @@ func updatesLoop() {
 
 		time.Sleep(time.Second * sleepTimeoutSeconds)
 	}
-
 }
 
+// Execute function from clients commands
 func executeFunctions(update telegram.TgUpdate) {
 	if update.Message.From.Id != adminId {
 		err := sendMsg(update.Message.From.Id, "This bot is private. You haven't access to this.")
@@ -161,6 +195,8 @@ func executeFunctions(update telegram.TgUpdate) {
 	}
 }
 
+
+// Message Sender
 func sendMsg(chatID int64, msg string) error {
 	// Convert our custom type into jso	n format
 	reqBytes := []byte(fmt.Sprintf("{\"chat_id\":\"%d\", \"text\":\"%s\"}", chatID, msg))

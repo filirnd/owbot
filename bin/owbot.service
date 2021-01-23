@@ -1,0 +1,13 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start() {
+    cd /root/owbot_install
+    ./owbot
+}
+
+
+stop() {
+  kill -9 $(ps | grep 'owbot' | awk '{print $1}')
+}

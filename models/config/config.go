@@ -8,8 +8,12 @@ import (
 type Config struct {
 	TgId int64 `json:"id"`
 	TgBotToken string `json:"token"`
+	Async AsyncConf `json:"async"`
 }
 
+type AsyncConf struct {
+	NewClient bool `json:"newClient"`
+}
 
 func ConfigFromFile(path string) (Config,error){
 	cfgByteArray,err := ioutil.ReadFile(path)
