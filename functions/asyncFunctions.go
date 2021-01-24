@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var asyncFunctionSlice = make([]func(msg *chan string, config config.Config ),0)
@@ -37,15 +38,13 @@ func wifiClientsTriggerAsyncFunction(msg *chan string, config config.Config){
 		fmt.Println("NewClient Async disabled.")
 		return
 	}
-
-	cmd := exec.Command("logread", "-e" ,"associated", "-f")
+	cmd := exec.Command("/sbin/logread", "-e" ,"associated", "-f")
 	// create a pipe for the output of the script
 	cmdReader, err := cmd.StdoutPipe()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
 		return
 	}
-
 	scanner := bufio.NewScanner(cmdReader)
 	go func() {
 		for scanner.Scan() {
@@ -55,8 +54,8 @@ func wifiClientsTriggerAsyncFunction(msg *chan string, config config.Config){
 			//Getting mac
 			r, _ := regexp.Compile("([0-9a-fA-F]{2}[:]){5}([0-9a-fA-F]{2})")
 			mac := r.FindStringSubmatch(txt)
-
 			if len(mac)>0 {
+				time.Sleep(time.Second *2 ) // Waiting two seconds, time for writing new client on dhcp file
 				dhcpBytes, err := ioutil.ReadFile(dhcpFile)
 				if err != nil {
 					fmt.Println( err)
@@ -72,7 +71,6 @@ func wifiClientsTriggerAsyncFunction(msg *chan string, config config.Config){
 								}
 							}
 					}
-
 					 if len(toRet) == 0 {
 					 	toRet = "Connected new client => "+mac[0]
 					 }

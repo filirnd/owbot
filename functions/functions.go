@@ -32,7 +32,7 @@ func ExecuteFunction(name string, update telegram.TgUpdate) (string, error) {
 // FUNCTIONS
 
 func reboot(update telegram.TgUpdate) (string,error) {
-	cmd := exec.Command("reboot")
+	cmd := exec.Command("/sbin/reboot")
 	_, err := cmd.Output()
 	if err != nil {
 		fmt.Println("Reboot error " + err.Error())
@@ -50,7 +50,7 @@ func getClients(update telegram.TgUpdate) (string, error) {
 	toRet := "Connected clients:\n"
 	macList := make([]string, 0)
 	for _, iface := range l {
-		cmd := exec.Command("iw", "dev", iface.Name, "station", "dump")
+		cmd := exec.Command("/usr/sbin/iw", "dev", iface.Name, "station", "dump")
 		cmdOut, err := cmd.Output()
 		if err != nil {
 			fmt.Println(iface.Name + " error " + err.Error())

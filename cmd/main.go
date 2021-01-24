@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-const version = "1.0.0"
+const version = "0.1.0b"
 const configFile = "resources/config.json"
 const lastOffsetFile = "resources/lastOffset"
 const sleepTimeoutSeconds = 2
@@ -36,23 +36,16 @@ func start() {
 	fmt.Println("")
 	fmt.Println("   \\     /                   #### OWbot ####  v. "+version+"\n   _\\___/_\n /______ /|  Yet another telegram bot, but for your router.\n|_°_____|/   Made with <3 by Filirnd (https://github.com/filirnd/)")
 	fmt.Println("")
-
 	cfg,err := loadConfig()
 	if err != nil {
 		fmt.Println("Cannot load config. Error "+err.Error())
 		os.Exit(-1)
 	}
-
-	fmt.Println("AdminId:"+strconv.FormatInt(adminId,10))
-	fmt.Println("BotToken:"+botToken)
-
-
 	err =sendMsg(adminId,"Router started!")
 	if err != nil {
 		fmt.Println("Error sending message "+err.Error())
 	}
 	getLastOffsetFromFile()
-
 
 	msgChan := make(chan string)
 	functions.StartAsyncFunctions(&msgChan,cfg)
@@ -60,7 +53,6 @@ func start() {
 
 	functions.InitFunctions()
 	go updatesLoop()
-
 	for {
 		time.Sleep(time.Second * 10)
 	}
@@ -78,7 +70,6 @@ func asyncMessageSender(msg *chan string){
 			fmt.Println("Cannot send async msg. Error: "+err.Error())
 		}
 	}
-
 }
 
 
@@ -89,7 +80,6 @@ func loadConfig() (config.Config,error){
 	}
 	adminId = cfg.TgId
 	botToken = cfg.TgBotToken
-
 	return cfg,nil
 }
 
