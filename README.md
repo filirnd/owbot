@@ -23,8 +23,7 @@ OWBot is a telegram bot for OpenWrt, made in golang and easily expandable.
 Actual implemented functions are:
 
     - /clients: return list of connected clients
-        ![clients](images/clients.png)
-        Format: ![Alt Text](url)
+        ![alt text](https://github.com/filirnd/owbot/blob/master/images/clients.png?raw=true)
     - /reboot: reboot the router
      
 ## Installation:
