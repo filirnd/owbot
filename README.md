@@ -11,7 +11,7 @@
 ## Version
 0.1.0b
 
-This software is in beta stage, so not use it in production environments. 
+This software is in beta stage, so don't use it in production environments. 
 
 ## Description
 OWBot is a telegram bot for OpenWrt, made in golang and easily expandable.
