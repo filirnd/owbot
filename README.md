@@ -15,6 +15,7 @@ This software is in beta stage, so don't use it in production environments.
 
 ## Description
 OWBot is a telegram bot for OpenWrt, made in golang and easily expandable.
+
 It answers only to configured telegram id (only one for now) for privacy reasons.
 
 
@@ -48,15 +49,19 @@ Another prerequisite is create a new telegram bot from @botfather bot (follow th
 ### Install:
 
 - Unzip the correct zip package on your pc 
-- Transfer the directory unziped to the /root
+- Transfer the directory unziped to the /root of your router
+    ```bash
+        scp -r owbot_install root@192.x.y.1:/root
+    ```
 - Open ssh session on your router and enter on copied directory (/root/owbot_install/)
+
     `cd /root/owbot_install`
 - Open with vi the config file /root/owbot_install/resources/config.json and change the configs like this:
     ```json  {
       "id": 0, // YOUR PERSONAL TELEGRAM ID
       "token": "00:xxxx", // YOUR BOT TOKEN
       "async" : {
-          "newClient": true // SET TO true/false IF WANT NEW CLIENT TRIGGER OR NOT
+          "newClient": true // SET TO true or false IF WANT NEW CLIENT TRIGGER OR NOT
       }
   }
 
