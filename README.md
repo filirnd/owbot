@@ -28,7 +28,7 @@ Actual implemented functions are:
      
 Actual async implemented functions are:
 
-- New Client trigger: when new client is connected on router, the bot received a notification with same format of clients list (name - ip - mac address)
+- New Client trigger: when new client connects on router, the bot received a notification with same format of clients list (name - ip - mac address)
 
 
 ## Installation:
