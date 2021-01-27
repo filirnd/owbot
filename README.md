@@ -57,7 +57,8 @@ Another prerequisite is create a new telegram bot from @botfather bot (follow th
 
     `cd /root/owbot_install`
 - Open with vi the config file /root/owbot_install/resources/config.json and change the configs like this:
-    ```json  {
+    ```json  
+    {
       "id": 0, // YOUR PERSONAL TELEGRAM ID
       "token": "00:xxxx", // YOUR BOT TOKEN
       "async" : {
