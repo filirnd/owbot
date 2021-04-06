@@ -79,7 +79,6 @@ This bot is tested on this devices:
 
 Need people for testing this bot on their routers. If you want to help me contact to email or open an issue.
 
-
 ## Compile
 `TODO`
 
@@ -91,4 +90,7 @@ upx(for go package reduction) and golang installed.
 ## Add custom functions:
 `TODO`
 
+## Buy me a coffee
+If this software help you and want to support me, buy me a coffe <3
 
+[<img src="https://raw.githubusercontent.com/stefan-niedermann/paypal-donate-button/master/paypal-donate-button.png" width="250"/>](https://www.paypal.com/donate?business=7WJ563Y2436MA&currency_code=EUR)
