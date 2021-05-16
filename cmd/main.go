@@ -137,27 +137,27 @@ func updatesLoop() {
 		resp, err := http.Get(
 			"https://api.telegram.org/bot" + botToken + "/" + "getUpdates?offset=" + strconv.FormatInt(offset, 10) + "&timeout=10",
 		)
-		if err != nil {
+ 		if err != nil {
 			fmt.Println("Get Updates Error " + err.Error())
-		}
-
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Println("Get Updates Error " + err.Error())
-		}
-		tgUpdateResult := telegram.TgUpdateResult{}
-		err = json.Unmarshal(body, &tgUpdateResult)
-		if err != nil {
-			fmt.Println("Get Updates Unmarshalling Error " + err.Error())
-		}
-
-		for _, update := range tgUpdateResult.Result {
-			if update.UpdateId > offset {
-				updateLastOffset(update.UpdateId)
-				executeFunctions(update)
+		}else {
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Println("Get Updates Error " + err.Error())
 			}
-		}
+			tgUpdateResult := telegram.TgUpdateResult{}
+			err = json.Unmarshal(body, &tgUpdateResult)
+			if err != nil {
+				fmt.Println("Get Updates Unmarshalling Error " + err.Error())
+			} else {
+				for _, update := range tgUpdateResult.Result {
+					if update.UpdateId > offset {
+						updateLastOffset(update.UpdateId)
+						executeFunctions(update)
+					}
+				}
+			}
 
+		}
 		time.Sleep(time.Second * sleepTimeoutSeconds)
 	}
 }
