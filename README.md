@@ -9,7 +9,7 @@
 ````
 
 ## Version
-0.1.0b
+0.1.1b
 
 This software is in beta stage, so don't use it in production environments. 
 
